@@ -1,17 +1,16 @@
 import React, { Component } from 'react'
+import {connect} from 'react-redux';
 import Select from 'react-select'
+import {changeSelection} from '../../ac';
+import 'react-day-picker/lib/style.css';
 
 class SelectFilter extends Component {
-    state = {
-        selectedOption: null
-    }
-
     render() {
         return (
             <Select
                 options={this.optionsForSelect}
                 onChange={this.handleSelectChange}
-                value={this.state.selectedOption}
+                value={this.props.selectedOption}
                 isMulti
             />
         )
@@ -25,8 +24,20 @@ class SelectFilter extends Component {
     }
 
     handleSelectChange = (selectedOption) => {
-        this.setState({ selectedOption })
+        this.props.changeSelection(selectedOption)
     }
 }
 
-export default SelectFilter
+const mapStateToProps = (state) => ({
+    articles: state.articles,
+    dateRange: state.filters.selected
+})
+
+const mapDispatchToProps = {
+    changeSelection: changeSelection
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(SelectFilter)

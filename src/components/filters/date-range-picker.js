@@ -1,32 +1,40 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import DayPicker, { DateUtils } from 'react-day-picker';
+import {changeDateRange, resetDateRange} from '../../ac';
 import 'react-day-picker/lib/style.css';
 
-export default class Example extends React.Component {
+
+class Example extends React.Component {
     static defaultProps = {
         numberOfMonths: 2,
     };
+    
     constructor(props) {
         super(props);
         this.handleDayClick = this.handleDayClick.bind(this);
         this.handleResetClick = this.handleResetClick.bind(this);
         this.state = this.getInitialState();
     }
+
     getInitialState() {
         return {
             from: undefined,
             to: undefined,
         };
     }
+
     handleDayClick(day) {
-        const range = DateUtils.addDayToRange(day, this.state);
-        this.setState(range);
+        const range = DateUtils.addDayToRange(day, this.props.dateRange);
+        this.props.changeDateRange(range);
     }
+
     handleResetClick() {
-        this.setState(this.getInitialState());
+        this.props.resetDateRange();
     }
+
     render() {
-        const { from, to } = this.state;
+        const { from, to } = this.props.dateRange;
         const modifiers = { start: from, end: to };
         return (
             <div className="RangeExample">
@@ -55,3 +63,18 @@ export default class Example extends React.Component {
         );
     }
 }
+
+
+const mapStateToProps = (state) => ({
+    dateRange: state.filters.dateRange
+})
+
+const mapDispatchToProps = {
+    changeDateRange: changeDateRange,
+    resetDateRange: resetDateRange
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Example)
